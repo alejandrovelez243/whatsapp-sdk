@@ -487,3 +487,7 @@ class HTTPClient:
 - **Message Types**: https://developers.facebook.com/docs/whatsapp/cloud-api/messages
 - **Webhooks**: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks
 - **Error Codes**: https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes
+- always a task is done, you must set it as completed
+- It is not necesarry to keep backward compatibility at least the user say it, due this is a new project and don't matter to have compatbility to old ways of doing the stuff
+- any call to an api from whatsapp, should return a pydantic model, never should return a dict.
+- Always follow the tasks in the '/Users/alejandrovelez/Desktop/colaborations/whatsapp-sdk/claude_docs/TASKS.md' file, and after you finish each task, wait for my approval to continue
