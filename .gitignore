@@ -11,3 +11,8 @@ wheels/
 claude_docs/
 .claude/
 .DS_Store
+.ruff_cache/
+.pytest_cache/
+.coverage/
+.coverage*
+coverage*
