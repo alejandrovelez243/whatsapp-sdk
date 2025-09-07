@@ -1,13 +1,26 @@
-# WhatsApp Business SDK for Python
+# WhatsApp SDK Python
 
-A modern, synchronous Python SDK for the WhatsApp Business API with a clean, simple interface inspired by OpenAI and ElevenLabs SDKs.
+[![PyPI version](https://badge.fury.io/py/whatsapp-sdk.svg)](https://badge.fury.io/py/whatsapp-sdk)
+[![Python Support](https://img.shields.io/pypi/pyversions/whatsapp-sdk.svg)](https://pypi.org/project/whatsapp-sdk/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://github.com/alejandrovelez243/whatsapp-sdk-python/actions/workflows/ci.yml/badge.svg)](https://github.com/alejandrovelez243/whatsapp-sdk-python/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/alejandrovelez243/whatsapp-sdk-python/branch/main/graph/badge.svg)](https://codecov.io/gh/alejandrovelez243/whatsapp-sdk-python)
+[![Documentation Status](https://readthedocs.org/projects/whatsapp-sdk-python/badge/?version=latest)](https://whatsapp-sdk-python.readthedocs.io/en/latest/?badge=latest)
 
-## Features
+A comprehensive **synchronous** Python SDK for WhatsApp Business Cloud API, following Meta's official documentation.
 
-- 🚀 **Simple & Clean**: Synchronous API without async/await complexity
-- 🎯 **Type-Safe**: Full Pydantic model support with type hints
-- 📦 **Comprehensive**: Support for all WhatsApp message types
-- 🔄 **Reliable**: Built-in retry logic and rate limiting
+## 🌟 Features
+
+- ✅ **100% Synchronous** - Simple, straightforward API without async complexity
+- 📘 **Fully Type-Hinted** - Complete type safety with Pydantic models
+- 🔄 **Auto-Retry Logic** - Built-in retry mechanism for robust API calls
+- 🔐 **Webhook Verification** - Secure webhook signature validation
+- 📦 **Media Management** - Upload, download, and manage media files
+- 💬 **Template Messages** - Full template message support
+- 🔔 **Interactive Messages** - Buttons, lists, and quick replies
+- 📍 **Location Messages** - Send and receive location data
+- 👥 **Contact Messages** - Share contact cards
+- ✨ **Modern Python** - Supports Python 3.8+
 - 🛡️ **Secure**: Webhook signature validation and secure token handling
 - 📝 **Well-Documented**: Extensive documentation and examples
 

@@ -1,320 +1,254 @@
-# Contributing to WhatsApp SDK
+# Contributing to WhatsApp SDK Python
 
-¡Gracias por tu interés en contribuir al WhatsApp SDK! / Thank you for your interest in contributing to WhatsApp SDK!
+Thank you for your interest in contributing to WhatsApp SDK Python! 🎉
 
-## 🎯 How to Contribute
+## 📋 Table of Contents
 
-We welcome contributions from the community! Here are ways you can help:
+- [Code of Conduct](#code-of-conduct)
+- [How to Contribute](#how-to-contribute)
+- [Development Process](#development-process)
+- [Environment Setup](#environment-setup)
+- [Style Guides](#style-guides)
+- [Pull Request Process](#pull-request-process)
+- [Reporting Bugs](#reporting-bugs)
+- [Suggesting Enhancements](#suggesting-enhancements)
 
-- 🐛 Report bugs and issues
-- 💡 Suggest new features
-- 📝 Improve documentation
-- 🔧 Submit bug fixes
-- ✨ Add new features
-- 🌍 Add translations
+## Code of Conduct
 
-## 🚀 Getting Started
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
-### Prerequisites
+## How to Contribute
 
-- Python 3.8 or higher
-- `uv` package manager (recommended) or `pip`
-- Git
+### 🐛 Reporting Bugs
 
-### Development Setup
+Before creating a bug report, please check that a similar issue doesn't already exist.
+
+**To report a bug:**
+
+1. Use the bug issue template
+2. Include a clear and descriptive title
+3. Provide detailed steps to reproduce the problem
+4. Include minimal example code that reproduces the issue
+5. Describe expected behavior vs actual behavior
+6. Include logs, screenshots if applicable
+7. Mention your environment (Python version, OS, etc.)
+
+### 💡 Suggesting Enhancements
+
+1. First check existing issues and the roadmap
+2. Open an issue using the feature request template
+3. Clearly explain the problem it solves
+4. Provide usage examples
+5. If possible, suggest an implementation
+
+### 🔧 Contributing Code
 
 1. **Fork the repository**
+2. **Create a branch** from `develop`:
    ```bash
-   # Click "Fork" button on GitHub
+   git checkout -b feature/amazing-feature
+   # or
+   git checkout -b fix/bug-description
    ```
 
-2. **Clone your fork**
+3. **Set up your development environment**:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/whatsapp-sdk.git
-   cd whatsapp-sdk
-   ```
+   # Clone your fork
+   git clone https://github.com/your-username/whatsapp-sdk-python.git
+   cd whatsapp-sdk-python
 
-3. **Create a virtual environment**
-   ```bash
-   # Using uv (recommended)
+   # Install with uv (recommended)
    uv venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-   # Or using venv
-   python -m venv .venv
-   source .venv/bin/activate
-   ```
-
-4. **Install dependencies**
-   ```bash
-   # Using uv
    uv pip install -e ".[dev]"
 
-   # Or using pip
+   # Or with pip
+   python -m venv .venv
+   source .venv/bin/activate
    pip install -e ".[dev]"
    ```
 
-5. **Set up pre-commit hooks**
+4. **Install pre-commit hooks**:
    ```bash
    pre-commit install
    ```
 
-## 📋 Development Workflow
+## Development Process
 
-### 1. Create a Feature Branch
+### 1. Test-Driven Development (TDD)
 
-```bash
-# Create a new branch from main
-git checkout -b feature/your-feature-name
-
-# For bug fixes
-git checkout -b fix/issue-description
-
-# For documentation
-git checkout -b docs/what-you-are-documenting
-```
-
-### 2. Make Your Changes
-
-Follow the project structure and conventions defined in `CLAUDE.md`:
-
-- **Services**: All business logic goes in `src/whatsapp_sdk/services/`
-- **Models**: Pydantic models in `src/whatsapp_sdk/models/`
-- **Tests**: Mirror the source structure in `tests/unit/`
-- **SYNCHRONOUS**: This SDK is synchronous - no async/await
-
-### 3. Write Tests FIRST (TDD)
-
-**Tests are mandatory!** We follow Test-Driven Development:
+**MANDATORY**: Write tests FIRST
 
 ```python
-# tests/unit/services/test_your_feature.py
-def test_your_feature():
-    """Test description."""
-    # Write your test first
-    assert expected == actual
+# 1. Write the test first in tests/unit/services/test_feature.py
+def test_new_feature():
+    service = FeatureService(...)
+    result = service.do_something("param")
+    assert result.success is True
+
+# 2. Run the test (should fail)
+pytest tests/unit/services/test_feature.py -xvs
+
+# 3. Implement the functionality in src/whatsapp_sdk/services/feature.py
+
+# 4. Run the test until it passes
 ```
 
-Run tests:
-```bash
-# Run specific test
-uv run pytest tests/unit/services/test_your_feature.py -xvs
+### 2. Code Rules
 
-# Run all tests with coverage
-uv run pytest --cov=whatsapp_sdk
+#### ⚠️ CRITICAL: NO ASYNC/AWAIT
 
-# Run only unit tests
-uv run pytest tests/unit/
+This SDK is **SYNCHRONOUS**. Don't use `async/await` anywhere:
+
+```python
+# ✅ CORRECT
+def send_message(self, to: str, body: str) -> MessageResponse:
+    response = self.http.post(endpoint, json=payload)
+    return MessageResponse(**response)
+
+# ❌ INCORRECT
+async def send_message(self, to: str, body: str) -> MessageResponse:
+    response = await self.http.post(endpoint, json=payload)
+    return MessageResponse(**response)
 ```
 
-### 4. Follow Code Style
+#### 📦 Service Structure
 
-The project uses `ruff` and `black` for code formatting:
+**NEVER** put business logic in `client.py`:
+
+```python
+# ✅ CORRECT: services/messages.py
+class MessagesService:
+    def send_text(self, to: str, body: str) -> MessageResponse:
+        # All logic here
+
+# client.py only wires services
+self.messages = MessagesService(...)
+
+# ❌ INCORRECT: NO pongas lógica en client.py
+class WhatsAppClient:
+    def send_text(self, ...):  # NO! DON'T put logic in client.py
+```
+
+#### 🔍 Always Return Pydantic Models
+
+```python
+# ✅ CORRECT
+def get_media(self, media_id: str) -> MediaResponse:
+    data = self.http.get(f"/{media_id}")
+    return MediaResponse(**data)  # Pydantic model
+
+# ❌ INCORRECT
+def get_media(self, media_id: str) -> dict:
+    return self.http.get(f"/{media_id}")  # DON'T return dicts
+```
+
+### 3. Code Quality
+
+Before committing, run:
 
 ```bash
-# Format code
-uv run ruff format src/ tests/
-uv run black src/ tests/
+# Formatting
+black src/ tests/
+ruff format src/ tests/
 
-# Check linting
-uv run ruff check src/ tests/
+# Linting
+ruff check src/ tests/
 
 # Type checking
-uv run mypy src/
-```
-
-### 5. Update Documentation
-
-- Update docstrings for all public methods
-- Update README.md if adding new features
-- Add examples in `examples/` directory if applicable
-
-### 6. Commit Your Changes
-
-Follow conventional commits format:
-
-```bash
-# Features
-git commit -m "feat: add template message support"
-
-# Bug fixes
-git commit -m "fix: correct webhook signature validation"
-
-# Documentation
-git commit -m "docs: update installation instructions"
+mypy src/
 
 # Tests
-git commit -m "test: add unit tests for media service"
+pytest tests/ --cov=whatsapp_sdk
 
-# Refactoring
-git commit -m "refactor: simplify message builder logic"
-
-# Performance
-git commit -m "perf: optimize batch message sending"
-
-# Chores
-git commit -m "chore: update dependencies"
+# All together
+make quality  # If you have Makefile
 ```
 
-### 7. Push and Create Pull Request
+## Style Guides
 
-```bash
-# Push your branch
-git push origin feature/your-feature-name
-```
+- **Python**: We follow PEP 8 with 100 character lines
+- **Commits**: Conventional Commits
+  - `feat:` New feature
+  - `fix:` Bug fix
+  - `docs:` Documentation changes
+  - `test:` Add or modify tests
+  - `refactor:` Refactoring without functional changes
+  - `chore:` Maintenance tasks
+- **Docstrings**: Google style
+- **Type hints**: Required in all public functions
 
-Then create a Pull Request on GitHub with:
-- Clear title describing the change
-- Description of what and why
-- Link to related issue (if any)
-- Screenshots/examples (if UI related)
+## Pull Request Process
 
-## 📝 Pull Request Guidelines
+1. **Update your branch** with the latest changes from `develop`:
+   ```bash
+   git fetch upstream
+   git rebase upstream/develop
+   ```
 
-### PR Title Format
-```
-<type>(<scope>): <subject>
+2. **Ensure all tests pass**:
+   ```bash
+   pytest tests/
+   ```
 
-Types: feat, fix, docs, test, refactor, perf, chore
-Scope: messages, media, templates, webhooks, client, etc.
-```
+3. **Update documentation** if necessary
 
-Examples:
-- `feat(messages): add support for reaction messages`
-- `fix(webhooks): validate signature correctly`
-- `docs(readme): add usage examples`
+4. **Create the Pull Request**:
+   - Use a descriptive title
+   - Reference any related issue (#123)
+   - Describe the changes made
+   - Include screenshots if there are visual changes
+   - Mark the checklist in the PR template
 
-### PR Description Template
+5. **Review Process**:
+   - At least 1 approval required
+   - All CI checks must pass
+   - No conflicts with the base branch
+   - Test coverage must not decrease
 
-```markdown
-## Description
-Brief description of changes
+### PR Checklist
 
-## Type of Change
-- [ ] Bug fix (non-breaking change)
-- [ ] New feature (non-breaking change)
-- [ ] Breaking change (fix or feature that would break existing functionality)
-- [ ] Documentation update
+- [ ] I have read the contribution guidelines
+- [ ] My code follows the project style
+- [ ] I have added tests that prove my fix/feature
+- [ ] All tests pass locally
+- [ ] I have updated documentation if necessary
+- [ ] My code is SYNCHRONOUS (no async/await)
+- [ ] I have followed the service structure
+- [ ] I return Pydantic models, not dicts
 
-## Testing
-- [ ] Unit tests pass locally
-- [ ] Integration tests pass (if applicable)
-- [ ] Coverage remains above 80%
+## Branch Structure
 
-## Checklist
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex code
-- [ ] Documentation updated
-- [ ] No new warnings generated
-- [ ] Dependent changes merged
+- `main` - Production branch, stable
+- `develop` - Development branch, for integration
+- `feature/*` - New features
+- `fix/*` - Bug fixes
+- `docs/*` - Documentation updates
+- `release/*` - Release preparation
 
-## Related Issues
-Fixes #(issue number)
-```
+## Versioning
 
-## 🧪 Testing Requirements
+We follow [Semantic Versioning](https://semver.org/):
+- MAJOR: Backward incompatible changes
+- MINOR: New backward compatible functionality
+- PATCH: Backward compatible bug fixes
 
-### Coverage Requirements
-- New features must have >90% test coverage
-- Overall project coverage must stay above 80%
-- All public methods must have tests
+## Communication
 
-### Test Categories
+- **Issues**: For bugs and feature requests
+- **Discussions**: For questions and general discussions
+- **Discord/Slack**: [Coming soon]
 
-1. **Unit Tests** (`tests/unit/`)
-   - Test individual components in isolation
-   - Use mocks for external dependencies
-   - Must run without network access
+## Recognition
 
-2. **Integration Tests** (`tests/integration/`)
-   - Test interaction with WhatsApp API
-   - Require test credentials
-   - May be skipped in CI for external contributors
+All contributors will be added to the README! 🌟
 
-## 🏗️ Architecture Guidelines
+## License
 
-### Follow SOLID Principles
-
-1. **Single Responsibility**: Each class/function does one thing
-2. **Open/Closed**: Open for extension, closed for modification
-3. **Liskov Substitution**: Derived classes must be substitutable
-4. **Interface Segregation**: Don't depend on unused interfaces
-5. **Dependency Inversion**: Depend on abstractions
-
-### Project Structure
-
-```
-src/whatsapp_sdk/
-├── client.py          # Client initialization only
-├── services/          # ALL business logic here
-│   ├── messages.py    # MessagesService class
-│   ├── media.py       # MediaService class
-│   └── templates.py   # TemplatesService class
-├── models/            # Pydantic models
-└── http_client.py     # HTTP client (synchronous)
-```
-
-### Important Rules
-
-1. **NO ASYNC**: This SDK is synchronous - no async/await
-2. **Pydantic Models**: Always return Pydantic models, never dicts
-3. **Service Pattern**: Business logic in services, not in client
-4. **Meta API Compliance**: Follow Meta's official documentation
-5. **Type Hints**: Use type hints everywhere
-
-## 🔍 Code Review Process
-
-All PRs will be reviewed for:
-
-1. **Functionality**: Does it work as intended?
-2. **Tests**: Are there adequate tests?
-3. **Documentation**: Is it well documented?
-4. **Style**: Does it follow project conventions?
-5. **Performance**: Is it efficient?
-6. **Security**: Are there any security concerns?
-
-## 🚫 What We Don't Accept
-
-- PRs without tests
-- Breaking changes without discussion
-- Code that doesn't follow project style
-- Features outside the project scope
-- Async/await implementations (this is a sync SDK)
-- Direct commits to main branch
-
-## 🤝 Community Guidelines
-
-### Be Respectful
-- Use welcoming and inclusive language
-- Respect differing viewpoints
-- Accept constructive criticism gracefully
-- Focus on what's best for the community
-
-### Communication Channels
-
-- **Issues**: Bug reports and feature requests
-- **Discussions**: General questions and ideas
-- **Pull Requests**: Code contributions
-
-## 📜 License
-
-By contributing, you agree that your contributions will be licensed under the MIT License.
-
-## 🙏 Recognition
-
-Contributors will be recognized in:
-- GitHub contributors page
-- CHANGELOG.md (for significant contributions)
-- README.md (for major contributors)
-
-## ❓ Questions?
-
-If you have questions, please:
-1. Check existing issues and discussions
-2. Read the documentation
-3. Open a new discussion if needed
+By contributing, you agree that your contributions will be licensed under the same MIT License as the project.
 
 ---
 
-Thank you for contributing to WhatsApp SDK! 🎉
+Questions? Open an issue or contact us.
+
+Thank you for making WhatsApp SDK Python better! 💚

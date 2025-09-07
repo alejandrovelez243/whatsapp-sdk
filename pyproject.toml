@@ -59,11 +59,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/alejandro-243/whatsapp-sdk"
-Documentation = "https://whatsapp-sdk.readthedocs.io"
-Repository = "https://github.com/alejandro-243/whatsapp-sdk"
-"Bug Tracker" = "https://github.com/alejandro-243/whatsapp-sdk/issues"
-"Changelog" = "https://github.com/alejandro-243/whatsapp-sdk/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/alejandrovelez243/whatsapp-sdk-python"
+Documentation = "https://whatsapp-sdk-python.readthedocs.io"
+Repository = "https://github.com/alejandrovelez243/whatsapp-sdk-python"
+"Bug Tracker" = "https://github.com/alejandrovelez243/whatsapp-sdk-python/issues"
+"Changelog" = "https://github.com/alejandrovelez243/whatsapp-sdk-python/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
