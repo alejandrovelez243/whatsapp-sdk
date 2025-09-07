@@ -54,8 +54,8 @@ Before creating a bug report, please check that a similar issue doesn't already 
 3. **Set up your development environment**:
    ```bash
    # Clone your fork
-   git clone https://github.com/your-username/whatsapp-sdk-python.git
-   cd whatsapp-sdk-python
+   git clone https://github.com/your-username/whatsapp-sdk.git
+   cd whatsapp-sdk
 
    # Install with uv (recommended)
    uv venv

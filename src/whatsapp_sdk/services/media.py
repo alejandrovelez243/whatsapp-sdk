@@ -207,7 +207,8 @@ class MediaService:
         if response.status_code >= 400:
             raise WhatsAppMediaError(f"Download failed: {response.status_code}")
 
-        return response.content
+        content: bytes = response.content
+        return content
 
     def download_to_file(self, media_id: str, file_path: str) -> str:
         """Download media directly to a file.

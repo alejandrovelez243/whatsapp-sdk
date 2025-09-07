@@ -3,9 +3,9 @@
 [![PyPI version](https://badge.fury.io/py/whatsapp-sdk.svg)](https://badge.fury.io/py/whatsapp-sdk)
 [![Python Support](https://img.shields.io/pypi/pyversions/whatsapp-sdk.svg)](https://pypi.org/project/whatsapp-sdk/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/alejandrovelez243/whatsapp-sdk-python/actions/workflows/ci.yml/badge.svg)](https://github.com/alejandrovelez243/whatsapp-sdk-python/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/alejandrovelez243/whatsapp-sdk-python/branch/main/graph/badge.svg)](https://codecov.io/gh/alejandrovelez243/whatsapp-sdk-python)
-[![Documentation Status](https://readthedocs.org/projects/whatsapp-sdk-python/badge/?version=latest)](https://whatsapp-sdk-python.readthedocs.io/en/latest/?badge=latest)
+[![Tests](https://github.com/alejandrovelez243/whatsapp-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/alejandrovelez243/whatsapp-sdk/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/alejandrovelez243/whatsapp-sdk/branch/main/graph/badge.svg)](https://codecov.io/gh/alejandrovelez243/whatsapp-sdk)
+[![Documentation Status](https://readthedocs.org/projects/whatsapp-sdk/badge/?version=latest)](https://whatsapp-sdk.readthedocs.io/en/latest/?badge=latest)
 
 A comprehensive **synchronous** Python SDK for WhatsApp Business Cloud API, following Meta's official documentation.
 
