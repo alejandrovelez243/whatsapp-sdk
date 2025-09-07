@@ -54,6 +54,8 @@ jobs:
         python-version: '3.11'
     - name: Install uv
       uses: astral-sh/setup-uv@v3
+    - name: Create virtual environment
+      run: uv venv
     - name: Run Bandit Security Scan
       run: |
         uv pip install bandit
