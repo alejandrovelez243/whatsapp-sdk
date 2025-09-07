@@ -44,7 +44,7 @@ class HTTPClient:
             headers={
                 "Authorization": f"Bearer {config.access_token}",
                 "Content-Type": "application/json",
-                "User-Agent": "WhatsApp-SDK-Python/0.1.0",
+                "User-Agent": "WhatsApp-sdk/0.1.0",
             },
         )
 

@@ -64,3 +64,36 @@ jobs:
       run: |
         uv pip install safety
         uv run safety check --json
+
+  docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Create virtual environment
+        run: uv venv
+
+      - name: Install documentation dependencies
+        run: |
+          uv pip install -r docs/requirements.txt
+          uv pip install -e .
+
+      - name: Build HTML documentation
+        run: |
+          cd docs
+          uv run sphinx-build -b html . _build/html -W --keep-going
+
+      - name: Upload documentation artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: docs/_build/html/
