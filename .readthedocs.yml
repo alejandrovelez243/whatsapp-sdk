@@ -10,10 +10,6 @@ build:
   tools:
     python: "3.11"
 
-  # Install the package itself to document it
-  commands:
-    - pip install -e .
-
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
   configuration: docs/conf.py
@@ -21,9 +17,7 @@ sphinx:
   fail_on_warning: false
 
 # Formats to build
-formats:
-  - pdf
-  - epub
+formats: []
 
 # Python dependencies
 python:
@@ -31,5 +25,3 @@ python:
     - requirements: docs/requirements.txt
     - method: pip
       path: .
-      extra_requirements:
-        - dev
