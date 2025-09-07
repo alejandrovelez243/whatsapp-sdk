@@ -204,6 +204,91 @@ response = client.messages.send_interactive(
 response = client.messages.mark_as_read("wamid.xxx")
 ```
 
+### Template Messages
+
+```python
+# Send template message
+response = client.templates.send(
+    to="+1234567890",
+    template_name="hello_world",
+    language_code="en_US"
+)
+
+# Send template with parameters
+from whatsapp_sdk.models import TemplateComponent, TemplateParameter
+
+components = [
+    TemplateComponent(
+        type="body",
+        parameters=[
+            TemplateParameter(type="text", text="John"),
+            TemplateParameter(type="text", text="ABC123")
+        ]
+    )
+]
+
+response = client.templates.send(
+    to="+1234567890",
+    template_name="order_confirmation",
+    language_code="en_US",
+    components=components
+)
+```
+
+### Media Operations
+
+```python
+# Upload media
+response = client.media.upload("/path/to/image.jpg")
+media_id = response.id
+
+# Download media
+content = client.media.download("media_id_123")
+with open("downloaded.jpg", "wb") as f:
+    f.write(content)
+
+# Delete media
+success = client.media.delete("media_id_123")
+```
+
+### Webhook Handling
+
+```python
+# FastAPI webhook example
+from fastapi import FastAPI, Request, Header, Query
+
+app = FastAPI()
+
+@app.get("/webhook")
+def verify_webhook(
+    hub_mode: str = Query(None, alias="hub.mode"),
+    hub_verify_token: str = Query(None, alias="hub.verify_token"),
+    hub_challenge: str = Query(None, alias="hub.challenge")
+):
+    result = client.webhooks.handle_verification(
+        hub_mode, hub_verify_token, hub_challenge
+    )
+    if result:
+        return result
+    return {"error": "Invalid token"}, 403
+
+@app.post("/webhook")
+async def handle_webhook(
+    request: Request,
+    x_hub_signature_256: str = Header(None)
+):
+    body = await request.body()
+    event = client.webhooks.handle_event(x_hub_signature_256, body)
+
+    # Process messages
+    messages = client.webhooks.extract_messages(event)
+    for message in messages:
+        if message.type == "text":
+            print(f"Received: {message.text.body}")
+
+    return {"status": "ok"}
+```
+
 ## Development Status
 
 ### ✅ Completed Phases
@@ -222,25 +307,18 @@ response = client.messages.mark_as_read("wamid.xxx")
   - Media models (Upload, URL, Delete responses)
   - Webhook models (Event, Entry, Message, Status)
 
-- **Phase 3.1**: Messages Service
-  - All message types (text, media, location, contacts, interactive)
-  - Message management (mark as read)
-  - Full Pydantic support
+- **Phase 3**: Services Implementation ✅
+  - **Messages Service**: All message types with full functionality
+  - **Templates Service**: Send, create, list, delete, update templates
+  - **Media Service**: Upload, download, delete media files
+  - **Webhooks Service**: Verification, signature validation, event parsing
 
-### 🚧 In Progress
-
-- **Phase 3.2-3.5**: Additional Services
-  - Templates Service (send, create, list, delete templates)
-  - Media Service (upload, download, delete media)
-  - Webhooks Service (verify, parse, process events)
-  - Utils Service (phone validation, formatting)
+- **Phase 4**: Client Integration ✅
+  - All services wired and functional
+  - Environment configuration support
+  - Clean service-oriented architecture
 
 ### 📋 Upcoming Phases
-
-- **Phase 4**: Client Integration
-  - Wire all services
-  - Environment configuration
-  - Connection pooling
 
 - **Phase 5**: Testing
   - Unit tests for all services

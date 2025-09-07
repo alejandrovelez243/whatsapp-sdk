@@ -131,7 +131,7 @@ response = client.messages.send_text(to="+123", text=text_msg)
 
 # ✅ SDK: Accept Union but convert immediately
 def send_contact(
-    self, 
+    self,
     to: str,
     contacts: Union[List[Contact], List[dict]]
 ) -> MessageResponse:
@@ -140,12 +140,12 @@ def send_contact(
         contacts_obj = [Contact(**c) for c in contacts]
     else:
         contacts_obj = contacts  # Already Pydantic
-    
+
     # Internal methods ONLY work with Pydantic
     return self._process_contacts(to, contacts_obj)
 
 def _process_contacts(
-    self, 
+    self,
     to: str,
     contacts: List[Contact]  # ONLY Pydantic, no Union
 ) -> MessageResponse:
@@ -161,7 +161,7 @@ def _process_contacts(self, contacts: Union[List[Contact], List[dict]]):
 
 **Benefits of Pydantic models for users:**
 - **Documentation**: See exactly what fields are available
-- **IDE Support**: Autocomplete shows all options  
+- **IDE Support**: Autocomplete shows all options
 - **Validation**: Errors caught before API call
 - **Type Safety**: Know exactly what you're sending/receiving
 
@@ -177,12 +177,12 @@ from whatsapp_sdk.models.messages import MessageResponse
 
 class MessagesService:
     """Handle WhatsApp message operations - SYNCHRONOUS."""
-    
+
     def __init__(self, http_client: HTTPClient, config: Config, phone_number_id: str):
         self.http = http_client
         self.config = config
         self.phone_number_id = phone_number_id
-    
+
     def send_text(self, to: str, body: str, **kwargs) -> MessageResponse:
         """Send text message - SYNCHRONOUS, no async!"""
         # Implementation following https://developers.facebook.com/docs/whatsapp/cloud-api/messages/text-messages
@@ -207,7 +207,7 @@ class WhatsAppClient:
     def __init__(self, phone_number_id: str, access_token: str, **kwargs):
         # Setup HTTP client (synchronous)
         self.http = HTTPClient(access_token=access_token, **kwargs)
-        
+
         # Wire services - NO BUSINESS LOGIC HERE
         self.messages = MessagesService(self.http, self.config, phone_number_id)
         self.media = MediaService(self.http, self.config, phone_number_id)
@@ -248,15 +248,15 @@ class MessagesService:
     ) -> MessageResponse:
         """
         Flexible input, SYNCHRONOUS execution.
-        
+
         Examples:
             # 1. Simple params (most common)
             client.messages.send_text(to="123", body="Hello")
-            
+
             # 2. Pydantic model
             msg = TextMessage(body="Hello", preview_url=True)
             client.messages.send_text(to="123", text=msg)
-            
+
             # 3. Dict (gets validated and converted to Pydantic)
             client.messages.send_text(to="123", text={"body": "Hello"})
         """
@@ -268,7 +268,7 @@ class MessagesService:
                 text_obj = text  # Already Pydantic
         else:
             text_obj = TextMessage(body=body, preview_url=preview_url)
-        
+
         # Now we ONLY work with Pydantic objects
         payload = self._build_text_payload(to, text_obj)
         response = self.http.post(endpoint, json=payload)  # No await!
@@ -423,12 +423,12 @@ from whatsapp_sdk.models.new_feature import NewFeatureResponse
 
 class NewFeatureService:
     """Service following Meta's API documentation - SYNCHRONOUS."""
-    
+
     def __init__(self, http_client: HTTPClient, config: Config, phone_number_id: str):
         self.http = http_client
         self.config = config
         self.phone_number_id = phone_number_id
-    
+
     def do_something(self, param: str) -> NewFeatureResponse:
         """
         Synchronous implementation based on Meta's docs.
@@ -456,7 +456,7 @@ from typing import Dict, Any
 
 class HTTPClient:
     """Synchronous HTTP client."""
-    
+
     def __init__(self, access_token: str, base_url: str = "https://graph.facebook.com"):
         self.client = httpx.Client(  # Not AsyncClient!
             base_url=base_url,
@@ -466,13 +466,13 @@ class HTTPClient:
             },
             timeout=30.0
         )
-    
+
     def post(self, endpoint: str, **kwargs) -> Dict[str, Any]:
         """Synchronous POST request."""
         response = self.client.post(endpoint, **kwargs)  # No await!
         response.raise_for_status()
         return response.json()
-    
+
     def get(self, endpoint: str, **kwargs) -> Dict[str, Any]:
         """Synchronous GET request."""
         response = self.client.get(endpoint, **kwargs)  # No await!

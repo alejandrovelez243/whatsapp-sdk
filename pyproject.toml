@@ -1,7 +1,7 @@
 [project]
 name = "whatsapp-sdk"
 version = "0.1.0"
-description = "A comprehensive Python SDK for WhatsApp Business API with FastAPI integration"
+description = "A comprehensive synchronous Python SDK for WhatsApp Business Cloud API following Meta's official documentation"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
@@ -11,7 +11,7 @@ maintainers = [
     { name = "Alejandro Velez", email = "alejandro-243@hotmail.com" }
 ]
 requires-python = ">=3.8"
-keywords = ["whatsapp", "sdk", "api", "business", "messaging", "fastapi", "webhook"]
+keywords = ["whatsapp", "whatsapp-business", "sdk", "api", "meta", "cloud-api", "messaging", "chatbot", "business-messaging"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -26,8 +26,10 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Communications :: Chat",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Framework :: FastAPI",
+    "Topic :: Internet :: WWW/HTTP",
     "Typing :: Typed",
+    "Natural Language :: English",
+    "Natural Language :: Spanish",
 ]
 dependencies = [
     "httpx>=0.25.0",
@@ -61,10 +63,11 @@ Homepage = "https://github.com/alejandro-243/whatsapp-sdk"
 Documentation = "https://whatsapp-sdk.readthedocs.io"
 Repository = "https://github.com/alejandro-243/whatsapp-sdk"
 "Bug Tracker" = "https://github.com/alejandro-243/whatsapp-sdk/issues"
+"Changelog" = "https://github.com/alejandro-243/whatsapp-sdk/blob/main/CHANGELOG.md"
 
 [build-system]
-requires = ["uv_build>=0.8.11,<0.9.0"]
-build-backend = "uv_build"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.ruff]
 line-length = 100
@@ -106,7 +109,7 @@ target-version = ["py38", "py39", "py310", "py311", "py312"]
 include = '\.pyi?$'
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 strict = true
 warn_unused_configs = true
 disallow_untyped_defs = true
