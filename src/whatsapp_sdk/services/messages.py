@@ -6,7 +6,7 @@ contacts, and interactive messages.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from whatsapp_sdk.models import (
     AudioMessage,
@@ -53,7 +53,7 @@ class MessagesService:
         self,
         to: str,
         body: Optional[str] = None,
-        text: Union[str, TextMessage, dict[str, Any], None] = None,
+        text: Union[str, TextMessage, Dict[str, Any], None] = None,
         preview_url: bool = False,
     ) -> MessageResponse:
         """Send a text message.
@@ -112,7 +112,7 @@ class MessagesService:
     def send_image(
         self,
         to: str,
-        image: Union[str, ImageMessage, dict[str, Any]],
+        image: Union[str, ImageMessage, Dict[str, Any]],
         caption: Optional[str] = None,
     ) -> MessageResponse:
         """Send an image message.
@@ -167,7 +167,7 @@ class MessagesService:
     def send_document(
         self,
         to: str,
-        document: Union[str, DocumentMessage, dict[str, Any]],
+        document: Union[str, DocumentMessage, Dict[str, Any]],
         caption: Optional[str] = None,
         filename: Optional[str] = None,
     ) -> MessageResponse:
@@ -211,7 +211,7 @@ class MessagesService:
         return MessageResponse(**response)
 
     def send_audio(
-        self, to: str, audio: Union[str, AudioMessage, dict[str, Any]]
+        self, to: str, audio: Union[str, AudioMessage, Dict[str, Any]]
     ) -> MessageResponse:
         """Send an audio message.
 
@@ -246,7 +246,7 @@ class MessagesService:
     def send_video(
         self,
         to: str,
-        video: Union[str, VideoMessage, dict[str, Any]],
+        video: Union[str, VideoMessage, Dict[str, Any]],
         caption: Optional[str] = None,
     ) -> MessageResponse:
         """Send a video message.
@@ -283,7 +283,7 @@ class MessagesService:
         return MessageResponse(**response)
 
     def send_sticker(
-        self, to: str, sticker: Union[str, StickerMessage, dict[str, Any]]
+        self, to: str, sticker: Union[str, StickerMessage, Dict[str, Any]]
     ) -> MessageResponse:
         """Send a sticker message.
 
@@ -354,7 +354,7 @@ class MessagesService:
                 address="1 Hacker Way, Menlo Park, CA"
             )
         """
-        location_data: dict[str, Any] = {"latitude": latitude, "longitude": longitude}
+        location_data: Dict[str, Any] = {"latitude": latitude, "longitude": longitude}
         if name:
             location_data["name"] = name
         if address:
@@ -372,7 +372,7 @@ class MessagesService:
         return MessageResponse(**response)
 
     def send_contact(
-        self, to: str, contacts: Union[list[Contact], ContactMessage, dict[str, Any]]
+        self, to: str, contacts: Union[List[Contact], ContactMessage, Dict[str, Any]]
     ) -> MessageResponse:
         """Send contact information.
 
@@ -423,7 +423,7 @@ class MessagesService:
         return MessageResponse(**response)
 
     def send_interactive(
-        self, to: str, interactive: Union[InteractiveMessage, dict[str, Any]]
+        self, to: str, interactive: Union[InteractiveMessage, Dict[str, Any]]
     ) -> MessageResponse:
         """Send an interactive message with buttons or lists.
 
@@ -495,7 +495,7 @@ class MessagesService:
             # Mark as read and show typing indicator
             response = messages.mark_as_read("wamid.xxx", typing_indicator=True)
         """
-        payload: dict[str, Any] = {
+        payload: Dict[str, Any] = {
             "messaging_product": "whatsapp",
             "status": "read",
             "message_id": message_id,

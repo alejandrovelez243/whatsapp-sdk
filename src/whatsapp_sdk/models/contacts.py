@@ -6,7 +6,7 @@ for sending and receiving contact details via WhatsApp.
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -92,12 +92,12 @@ class Contact(BaseModel):
     """
 
     name: Name = Field(..., description="Contact name (required)")
-    phones: Optional[list[Phone]] = Field(None, description="List of phone numbers")
-    emails: Optional[list[Email]] = Field(None, description="List of email addresses")
-    addresses: Optional[list[Address]] = Field(None, description="List of physical addresses")
+    phones: Optional[List[Phone]] = Field(None, description="List of phone numbers")
+    emails: Optional[List[Email]] = Field(None, description="List of email addresses")
+    addresses: Optional[List[Address]] = Field(None, description="List of physical addresses")
     org: Optional[Organization] = Field(None, description="Organization/workplace information")
     birthday: Optional[str] = Field(None, description="Birthday in YYYY-MM-DD format")
-    urls: Optional[list[Url]] = Field(None, description="List of URLs")
+    urls: Optional[List[Url]] = Field(None, description="List of URLs")
 
 
 class ContactMessage(BaseModel):
@@ -106,7 +106,7 @@ class ContactMessage(BaseModel):
     Wrapper for sending one or more contacts in a message.
     """
 
-    contacts: list[Contact] = Field(
+    contacts: List[Contact] = Field(
         ..., min_length=1, description="List of contacts to send (at least 1)"
     )
 
@@ -120,9 +120,9 @@ class ReceivedContact(BaseModel):
     profile: Optional[Name] = Field(None, description="Contact profile name")
     wa_id: Optional[str] = Field(None, description="WhatsApp ID of the contact")
     name: Optional[Name] = Field(None, description="Contact name details")
-    phones: Optional[list[Phone]] = Field(None, description="Contact phone numbers")
-    emails: Optional[list[Email]] = Field(None, description="Contact email addresses")
-    addresses: Optional[list[Address]] = Field(None, description="Contact physical addresses")
+    phones: Optional[List[Phone]] = Field(None, description="Contact phone numbers")
+    emails: Optional[List[Email]] = Field(None, description="Contact email addresses")
+    addresses: Optional[List[Address]] = Field(None, description="Contact physical addresses")
     org: Optional[Organization] = Field(None, description="Contact organization")
     birthday: Optional[str] = Field(None, description="Contact birthday")
-    urls: Optional[list[Url]] = Field(None, description="Contact URLs")
+    urls: Optional[List[Url]] = Field(None, description="Contact URLs")

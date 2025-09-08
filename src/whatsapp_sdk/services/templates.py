@@ -6,7 +6,7 @@ creating, listing, updating, and deleting templates.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from whatsapp_sdk.models import (
     MessageResponse,
@@ -49,7 +49,7 @@ class TemplatesService:
         to: str,
         template_name: str,
         language_code: str = "en_US",
-        components: Union[list[TemplateComponent], list[dict[str, Any]], None] = None,
+        components: Union[List[TemplateComponent], List[Dict[str, Any]], None] = None,
     ) -> MessageResponse:
         """Send a template message.
 
@@ -148,7 +148,7 @@ class TemplatesService:
         name: str,
         category: str,
         language: str,
-        components: list[dict[str, Any]],
+        components: List[Dict[str, Any]],
         allow_category_change: bool = True,
     ) -> TemplateResponse:
         """Create a new message template.
@@ -234,7 +234,7 @@ class TemplatesService:
         self,
         limit: Optional[int] = None,
         after: Optional[str] = None,
-        fields: Optional[list[str]] = None,
+        fields: Optional[List[str]] = None,
     ) -> TemplateListResponse:
         """List all message templates.
 
@@ -258,7 +258,7 @@ class TemplatesService:
         """
         waba_id = self._get_waba_id()
 
-        params: dict[str, Any] = {}
+        params: Dict[str, Any] = {}
         if limit:
             params["limit"] = str(limit)
         if after:
@@ -306,7 +306,7 @@ class TemplatesService:
 
         return bool(response.get("success", False))
 
-    def update(self, template_id: str, components: List[dict[str, Any]]) -> TemplateResponse:
+    def update(self, template_id: str, components: List[Dict[str, Any]]) -> TemplateResponse:
         """Update template components.
 
         Note: Only certain template elements can be updated after creation.

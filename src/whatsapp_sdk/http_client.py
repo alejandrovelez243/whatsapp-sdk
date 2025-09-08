@@ -7,7 +7,7 @@ including retries, rate limiting, and error handling.
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import httpx
 
@@ -57,8 +57,8 @@ class HTTPClient:
         self._request_interval = 1.0 / config.rate_limit  # Seconds between requests
 
     def post(
-        self, endpoint: str, json: Optional[dict[str, Any]] = None, **kwargs: Any
-    ) -> dict[str, Any]:
+        self, endpoint: str, json: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> Dict[str, Any]:
         """Make POST request to WhatsApp API.
 
         Args:
@@ -111,8 +111,8 @@ class HTTPClient:
         raise WhatsAppAPIError("Unknown error occurred")
 
     def get(
-        self, endpoint: str, params: Optional[dict[str, Any]] = None, **kwargs: Any
-    ) -> dict[str, Any]:
+        self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> Dict[str, Any]:
         """Make GET request to WhatsApp API.
 
         Args:
@@ -152,7 +152,7 @@ class HTTPClient:
             raise last_error
         raise WhatsAppAPIError("Unknown error occurred")
 
-    def delete(self, endpoint: str, **kwargs: Any) -> dict[str, Any]:
+    def delete(self, endpoint: str, **kwargs: Any) -> Dict[str, Any]:
         """Make DELETE request to WhatsApp API.
 
         Args:
@@ -194,10 +194,10 @@ class HTTPClient:
     def upload_multipart(
         self,
         endpoint: str,
-        files: dict[str, Any],
-        data: Optional[dict[str, Any]] = None,
+        files: Dict[str, Any],
+        data: Optional[Dict[str, Any]] = None,
         **kwargs: Any
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Make POST request with multipart/form-data for file uploads.
 
         Args:
@@ -307,7 +307,7 @@ class HTTPClient:
             raise last_error
         raise WhatsAppAPIError("Unknown error occurred")
 
-    def _handle_response(self, response: httpx.Response) -> dict[str, Any]:
+    def _handle_response(self, response: httpx.Response) -> Dict[str, Any]:
         """Handle API response and errors.
 
         Args:
@@ -349,7 +349,7 @@ class HTTPClient:
 
         # Parse successful response
         try:
-            data: dict[str, Any] = response.json()
+            data: Dict[str, Any] = response.json()
             return data
         except ValueError:
             # Some endpoints return empty responses

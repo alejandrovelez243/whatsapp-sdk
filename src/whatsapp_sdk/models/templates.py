@@ -6,7 +6,7 @@ listing, and deletion of message templates.
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -23,16 +23,16 @@ class TemplateButton(BaseModel):
         None, description="URL for URL buttons (can include {{1}} placeholder)"
     )
     phone_number: Optional[str] = Field(None, description="Phone number for PHONE_NUMBER buttons")
-    example: Optional[list[str]] = Field(None, description="Example values for URL placeholders")
+    example: Optional[List[str]] = Field(None, description="Example values for URL placeholders")
 
 
 class TemplateHeaderExample(BaseModel):
     """Example values for template header."""
 
-    header_text: Optional[list[str]] = Field(
+    header_text: Optional[List[str]] = Field(
         None, description="Example text values for header placeholders"
     )
-    header_handle: Optional[list[str]] = Field(
+    header_handle: Optional[List[str]] = Field(
         None, description="Example media handles for media headers"
     )
 
@@ -40,7 +40,7 @@ class TemplateHeaderExample(BaseModel):
 class TemplateBodyExample(BaseModel):
     """Example values for template body."""
 
-    body_text: Optional[list[list[str]]] = Field(
+    body_text: Optional[List[List[str]]] = Field(
         None, description="Example text values for body placeholders"
     )
 
@@ -48,9 +48,9 @@ class TemplateBodyExample(BaseModel):
 class TemplateExample(BaseModel):
     """Combined examples for template."""
 
-    header_text: Optional[list[str]] = Field(None, description="Header text examples")
-    body_text: Optional[list[list[str]]] = Field(None, description="Body text examples")
-    header_handle: Optional[list[str]] = Field(None, description="Header media handle examples")
+    header_text: Optional[List[str]] = Field(None, description="Header text examples")
+    body_text: Optional[List[List[str]]] = Field(None, description="Body text examples")
+    header_handle: Optional[List[str]] = Field(None, description="Header media handle examples")
 
 
 class TemplateComponentDefinition(BaseModel):
@@ -59,7 +59,7 @@ class TemplateComponentDefinition(BaseModel):
     type: str = Field(..., description="Component type: HEADER, BODY, FOOTER, or BUTTONS")
     format: Optional[str] = Field(None, description="Header format: TEXT, IMAGE, VIDEO, DOCUMENT")
     text: Optional[str] = Field(None, description="Component text with {{placeholders}}")
-    buttons: Optional[list[TemplateButton]] = Field(
+    buttons: Optional[List[TemplateButton]] = Field(
         None, description="List of buttons for BUTTONS component"
     )
     example: Optional[TemplateExample] = Field(None, description="Example values for placeholders")
@@ -77,12 +77,12 @@ class Template(BaseModel):
     category: str = Field(
         ..., description="Template category: MARKETING, UTILITY, or AUTHENTICATION"
     )
-    components: list[TemplateComponentDefinition] = Field(..., description="Template components")
+    components: List[TemplateComponentDefinition] = Field(..., description="Template components")
     status: Optional[str] = Field(None, description="Template status: APPROVED, PENDING, REJECTED")
     rejected_reason: Optional[str] = Field(
         None, description="Reason for rejection if status is REJECTED"
     )
-    quality_score: Optional[dict[str, Any]] = Field(
+    quality_score: Optional[Dict[str, Any]] = Field(
         None, description="Template quality score information"
     )
 
@@ -98,8 +98,8 @@ class TemplateResponse(BaseModel):
 class TemplateListResponse(BaseModel):
     """Response when listing templates."""
 
-    data: list[Template] = Field(..., description="List of templates")
-    paging: Optional[dict[str, Any]] = Field(None, description="Pagination information")
+    data: List[Template] = Field(..., description="List of templates")
+    paging: Optional[Dict[str, Any]] = Field(None, description="Pagination information")
 
 
 class TemplateDeleteResponse(BaseModel):
@@ -111,7 +111,7 @@ class TemplateDeleteResponse(BaseModel):
 class MessageTemplateUpdate(BaseModel):
     """Update existing template components."""
 
-    components: list[TemplateComponentDefinition] = Field(
+    components: List[TemplateComponentDefinition] = Field(
         ..., description="Updated template components"
     )
 

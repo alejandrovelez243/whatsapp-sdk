@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import Any
+from typing import Any, Dict
 from unittest.mock import Mock, patch
 
 import pytest
@@ -28,7 +28,7 @@ def mock_env(monkeypatch) -> None:
 
 
 @pytest.fixture()
-def mock_http_response() -> dict[str, Any]:
+def mock_http_response() -> Dict[str, Any]:
     """Create a mock HTTP response."""
     return {
         "messaging_product": "whatsapp",
@@ -77,7 +77,7 @@ def client(mock_config, mock_http_client) -> WhatsAppClient:
 
 
 @pytest.fixture()
-def sample_webhook_payload() -> dict[str, Any]:
+def sample_webhook_payload() -> Dict[str, Any]:
     """Sample webhook payload."""
     return {
         "object": "whatsapp_business_account",
