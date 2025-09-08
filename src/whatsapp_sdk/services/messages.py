@@ -403,7 +403,9 @@ class MessagesService:
                 c.model_dump(exclude_none=True) if hasattr(c, "model_dump") else c for c in contacts
             ]
         elif isinstance(contacts, ContactMessage):
-            contacts_data = contacts.contacts
+            contacts_data = [
+                c.model_dump(exclude_none=True) if hasattr(c, "model_dump") else c for c in contacts.contacts
+            ]
         elif isinstance(contacts, dict):
             contacts_data = contacts.get("contacts", [contacts])
         else:

@@ -20,6 +20,7 @@ A comprehensive **synchronous** Python SDK for WhatsApp Business Cloud API, foll
 - 🔔 **Interactive Messages** - Buttons, lists, and quick replies
 - 📍 **Location Messages** - Send and receive location data
 - 👥 **Contact Messages** - Share contact cards
+- ⌨️ **Typing Indicators** - Show typing status for better user experience
 - ✨ **Modern Python** - Supports Python 3.8+
 - 🛡️ **Secure**: Webhook signature validation and secure token handling
 - 📝 **Well-Documented**: Extensive documentation and examples
@@ -215,6 +216,12 @@ response = client.messages.send_interactive(
 ```python
 # Mark message as read
 response = client.messages.mark_as_read("wamid.xxx")
+
+# Mark as read with typing indicator
+response = client.messages.mark_as_read("wamid.xxx", typing_indicator=True)
+
+# Show typing indicator while processing
+response = client.messages.send_typing_indicator("wamid.xxx")
 ```
 
 ### Template Messages
