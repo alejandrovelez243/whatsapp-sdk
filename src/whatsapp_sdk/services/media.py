@@ -35,7 +35,8 @@ class MediaService:
         self.http_client = http_client
         self.config = config
         self.phone_number_id = phone_number_id
-        self.base_url = f"{config.base_url}/{phone_number_id}/media"
+        # Use HTTPClient's properly constructed base_url that includes v23.0
+        self.base_url = f"{http_client.base_url}/{phone_number_id}/media"
 
     # ========================================================================
     # UPLOAD MEDIA
@@ -84,20 +85,14 @@ class MediaService:
         # Prepare file for upload
         with open(file_path_obj, "rb") as file:
             files = {"file": (file_path_obj.name, file, mime_type)}
+            data = {"messaging_product": "whatsapp", "type": mime_type}
 
-            # Note: For file upload, we need to use multipart/form-data
-            # The httpx client will handle this automatically when files are provided
-            response = self.http_client.client.post(
-                self.base_url,
+            # Use HTTPClient's multipart upload method with proper error handling and retries
+            result = self.http_client.upload_multipart(
+                f"{self.phone_number_id}/media",
                 files=files,
-                data={"messaging_product": "whatsapp", "type": mime_type},
+                data=data
             )
-
-            # Handle response manually since we're using client directly
-            if response.status_code >= 400:
-                raise WhatsAppMediaError(f"Upload failed: {response.text}")
-
-            result = response.json()
 
         return MediaUploadResponse(**result)
 
@@ -144,16 +139,15 @@ class MediaService:
 
         # Prepare file for upload
         files = {"file": (filename, file_bytes, mime_type)}
+        data = {"messaging_product": "whatsapp", "type": mime_type}
 
-        response = self.http_client.client.post(
-            self.base_url, files=files, data={"messaging_product": "whatsapp", "type": mime_type}
+        # Use HTTPClient's multipart upload method with proper error handling and retries
+        result = self.http_client.upload_multipart(
+            f"{self.phone_number_id}/media",
+            files=files,
+            data=data
         )
 
-        # Handle response
-        if response.status_code >= 400:
-            raise WhatsAppMediaError(f"Upload failed: {response.text}")
-
-        result = response.json()
         return MediaUploadResponse(**result)
 
     # ========================================================================
@@ -204,15 +198,13 @@ class MediaService:
         # First get the URL
         url = self.get_url(media_id)
 
-        # Download the file
-        # Note: The media URL requires authentication
-        response = self.http_client.client.get(url)
-
-        if response.status_code >= 400:
-            raise WhatsAppMediaError(f"Download failed: {response.status_code}")
-
-        content: bytes = response.content
-        return content
+        # Download the file using HTTPClient's binary download method
+        # Note: The media URL requires authentication which HTTPClient handles
+        try:
+            content = self.http_client.download_binary(url)
+            return content
+        except Exception as e:
+            raise WhatsAppMediaError(f"Download failed: {e}") from e
 
     def download_to_file(self, media_id: str, file_path: str) -> str:
         """Download media directly to a file.

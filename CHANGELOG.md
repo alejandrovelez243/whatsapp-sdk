@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Typing indicator displays for up to 25 seconds or until a message is sent
   - Comprehensive test coverage for typing indicator functionality
 
+### Improved
+- MediaService enhancements and fixes
+  - Fixed API endpoint to include v23.0 version prefix for proper WhatsApp Cloud API compliance
+  - Added multipart upload support to HTTPClient for file uploads
+  - Added binary download support to HTTPClient for media downloads
+  - Improved error handling and retry logic for media operations
+  - Enhanced reliability for media file operations
+  - 100% test coverage for MediaService (32 comprehensive tests covering all scenarios)
+
 ## [0.1.0] - 2025-01-07
 
 ### Added

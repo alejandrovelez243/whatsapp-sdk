@@ -258,14 +258,34 @@ response = client.templates.send(
 ### Media Operations
 
 ```python
-# Upload media
+# Upload media from file
 response = client.media.upload("/path/to/image.jpg")
 media_id = response.id
+print(f"Uploaded: {media_id}")
 
-# Download media
+# Upload from bytes
+with open("document.pdf", "rb") as f:
+    response = client.media.upload_from_bytes(
+        file_bytes=f.read(),
+        mime_type="application/pdf",
+        filename="document.pdf"
+    )
+
+# Get media URL and info
+url_response = client.media.get_url("media_id_123")
+print(f"URL: {url_response.url}")
+print(f"Size: {url_response.file_size} bytes")
+
+# Download media to memory
 content = client.media.download("media_id_123")
 with open("downloaded.jpg", "wb") as f:
     f.write(content)
+
+# Download directly to file (memory efficient)
+saved_path = client.media.download_to_file(
+    "media_id_123",
+    "/path/to/save/file.jpg"
+)
 
 # Delete media
 success = client.media.delete("media_id_123")
