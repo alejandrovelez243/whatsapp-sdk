@@ -59,6 +59,9 @@ def mock_http_client(mock_http_response) -> Mock:
     mock.post = Mock(return_value=mock_http_response)
     mock.get = Mock(return_value={"data": [], "paging": {}})
     mock.delete = Mock(return_value={"success": True})
+    mock.base_url = "https://graph.facebook.com/v23.0"
+    mock.upload_multipart = Mock(return_value={"id": "media_123"})
+    mock.download_binary = Mock(return_value=b"fake_binary_data")
     return mock
 
 
