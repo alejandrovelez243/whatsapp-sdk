@@ -4,6 +4,8 @@ Main client for interacting with the WhatsApp Business API.
 This client wires all services together and provides a clean entry point.
 """
 
+from __future__ import annotations
+
 import os
 from typing import Optional
 
@@ -103,7 +105,7 @@ class WhatsAppClient:
         self.webhooks = WebhooksService(config=self.config)
 
     @classmethod
-    def from_env(cls) -> "WhatsAppClient":
+    def from_env(cls) -> WhatsAppClient:
         """Create client from environment variables.
 
         Required environment variables:

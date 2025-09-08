@@ -4,12 +4,13 @@ Handles all HTTP communication with the WhatsApp Business API,
 including retries, rate limiting, and error handling.
 """
 
+from __future__ import annotations
+
 import time
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import httpx
 
-from .config import WhatsAppConfig
 from .exceptions import (
     WhatsAppAPIError,
     WhatsAppAuthenticationError,
@@ -17,6 +18,9 @@ from .exceptions import (
     WhatsAppRateLimitError,
     WhatsAppValidationError,
 )
+
+if TYPE_CHECKING:
+    from .config import WhatsAppConfig
 
 
 class HTTPClient:
@@ -53,8 +57,8 @@ class HTTPClient:
         self._request_interval = 1.0 / config.rate_limit  # Seconds between requests
 
     def post(
-        self, endpoint: str, json: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Dict[str, Any]:
+        self, endpoint: str, json: Optional[dict[str, Any]] = None, **kwargs: Any
+    ) -> dict[str, Any]:
         """Make POST request to WhatsApp API.
 
         Args:
@@ -107,8 +111,8 @@ class HTTPClient:
         raise WhatsAppAPIError("Unknown error occurred")
 
     def get(
-        self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Dict[str, Any]:
+        self, endpoint: str, params: Optional[dict[str, Any]] = None, **kwargs: Any
+    ) -> dict[str, Any]:
         """Make GET request to WhatsApp API.
 
         Args:
@@ -148,7 +152,7 @@ class HTTPClient:
             raise last_error
         raise WhatsAppAPIError("Unknown error occurred")
 
-    def delete(self, endpoint: str, **kwargs: Any) -> Dict[str, Any]:
+    def delete(self, endpoint: str, **kwargs: Any) -> dict[str, Any]:
         """Make DELETE request to WhatsApp API.
 
         Args:
@@ -187,7 +191,7 @@ class HTTPClient:
             raise last_error
         raise WhatsAppAPIError("Unknown error occurred")
 
-    def _handle_response(self, response: httpx.Response) -> Dict[str, Any]:
+    def _handle_response(self, response: httpx.Response) -> dict[str, Any]:
         """Handle API response and errors.
 
         Args:
@@ -229,7 +233,7 @@ class HTTPClient:
 
         # Parse successful response
         try:
-            data: Dict[str, Any] = response.json()
+            data: dict[str, Any] = response.json()
             return data
         except ValueError:
             # Some endpoints return empty responses
@@ -251,7 +255,7 @@ class HTTPClient:
         """Close the HTTP client."""
         self.client.close()
 
-    def __enter__(self) -> "HTTPClient":
+    def __enter__(self) -> HTTPClient:
         """Context manager entry."""
         return self
 

@@ -4,7 +4,9 @@ These models handle incoming webhook events from WhatsApp,
 including messages, status updates, and system notifications.
 """
 
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -138,9 +140,9 @@ class WebhookMessage(BaseModel):
         None, description="Interactive message response data"
     )
     reaction: Optional[WebhookReactionMessage] = Field(None, description="Reaction message data")
-    contacts: Optional[List[Dict[str, Any]]] = Field(None, description="Contact cards shared")
-    errors: Optional[List[Dict[str, Any]]] = Field(
-        None, description="Any errors associated with the message"
+    contacts: list[dict[str, Optional[Any]]] = Field(default_factory=list, description="Contact cards shared")
+    errors: list[dict[str, Optional[Any]]] = Field(
+        default_factory=list, description="Any errors associated with the message"
     )
 
 
@@ -156,10 +158,10 @@ class WebhookStatus(BaseModel):
     status: str = Field(..., description="Status: sent, delivered, read, failed")
     timestamp: str = Field(..., description="Unix timestamp of status update")
     recipient_id: str = Field(..., description="Recipient's WhatsApp ID")
-    conversation: Optional[Dict[str, Any]] = Field(None, description="Conversation details")
-    pricing: Optional[Dict[str, Any]] = Field(None, description="Pricing information")
-    errors: Optional[List[Dict[str, Any]]] = Field(
-        None, description="Error details if status is failed"
+    conversation: dict[str, Optional[Any]] = Field(default_factory=dict, description="Conversation details")
+    pricing: dict[str, Optional[Any]] = Field(default_factory=dict, description="Pricing information")
+    errors: list[dict[str, Optional[Any]]] = Field(
+        default_factory=list, description="Error details if status is failed"
     )
 
 
@@ -178,7 +180,7 @@ class WebhookMetadata(BaseModel):
 class WebhookContact(BaseModel):
     """Contact information from webhook."""
 
-    profile: Optional[Dict[str, str]] = Field(None, description="Contact profile with name")
+    profile: dict[str, Optional[str]] = Field(default_factory=dict, description="Contact profile with name")
     wa_id: str = Field(..., description="WhatsApp ID of the contact")
 
 
@@ -192,10 +194,10 @@ class WebhookValue(BaseModel):
 
     messaging_product: str = Field("whatsapp", description="Always 'whatsapp'")
     metadata: WebhookMetadata = Field(..., description="Webhook metadata")
-    contacts: Optional[List[WebhookContact]] = Field(None, description="Contact information")
-    messages: Optional[List[WebhookMessage]] = Field(None, description="Incoming messages")
-    statuses: Optional[List[WebhookStatus]] = Field(None, description="Status updates")
-    errors: Optional[List[Dict[str, Any]]] = Field(None, description="Any errors")
+    contacts: Optional[list[WebhookContact]] = Field(None, description="Contact information")
+    messages: Optional[list[WebhookMessage]] = Field(None, description="Incoming messages")
+    statuses: Optional[list[WebhookStatus]] = Field(None, description="Status updates")
+    errors: list[dict[str, Optional[Any]]] = Field(default_factory=list, description="Any errors")
 
 
 class WebhookChange(BaseModel):
@@ -209,14 +211,14 @@ class WebhookEntry(BaseModel):
     """Webhook entry containing changes."""
 
     id: str = Field(..., description="Business account ID")
-    changes: List[WebhookChange] = Field(..., description="List of changes")
+    changes: list[WebhookChange] = Field(..., description="List of changes")
 
 
 class WebhookEvent(BaseModel):
     """Complete webhook event from WhatsApp."""
 
     object: str = Field(..., description="Object type (usually 'whatsapp_business_account')")
-    entry: List[WebhookEntry] = Field(..., description="List of entries")
+    entry: list[WebhookEntry] = Field(..., description="List of entries")
 
 
 # ============================================================================

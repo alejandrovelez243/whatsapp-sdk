@@ -4,14 +4,18 @@ Handles media operations including upload, download, and deletion
 of images, videos, documents, and audio files.
 """
 
+from __future__ import annotations
+
 import mimetypes
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from ..config import WhatsAppConfig
-from ..exceptions import WhatsAppMediaError
-from ..http_client import HTTPClient
-from ..models import MediaDeleteResponse, MediaUploadResponse, MediaURLResponse
+from whatsapp_sdk.exceptions import WhatsAppMediaError
+from whatsapp_sdk.models import MediaDeleteResponse, MediaUploadResponse, MediaURLResponse
+
+if TYPE_CHECKING:
+    from whatsapp_sdk.config import WhatsAppConfig
+    from whatsapp_sdk.http_client import HTTPClient
 
 
 class MediaService:

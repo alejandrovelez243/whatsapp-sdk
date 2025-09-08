@@ -4,14 +4,18 @@ Handles webhook verification, signature validation, and event parsing
 for incoming WhatsApp webhook events.
 """
 
+from __future__ import annotations
+
 import hashlib
 import hmac
 import json
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
-from ..config import WhatsAppConfig
-from ..exceptions import WhatsAppWebhookError
-from ..models import WebhookEvent, WebhookMessage, WebhookStatus
+from whatsapp_sdk.exceptions import WhatsAppWebhookError
+from whatsapp_sdk.models import WebhookEvent, WebhookMessage, WebhookStatus
+
+if TYPE_CHECKING:
+    from whatsapp_sdk.config import WhatsAppConfig
 
 
 class WebhooksService:
@@ -90,7 +94,7 @@ class WebhooksService:
     # EVENT PARSING
     # ========================================================================
 
-    def parse_event(self, payload: Dict[str, Any]) -> WebhookEvent:
+    def parse_event(self, payload: dict[str, Any]) -> WebhookEvent:
         """Parse webhook event payload.
 
         Args:
@@ -111,7 +115,7 @@ class WebhooksService:
         """
         return WebhookEvent(**payload)
 
-    def process_message(self, message: Dict[str, Any]) -> WebhookMessage:
+    def process_message(self, message: dict[str, Any]) -> WebhookMessage:
         """Process a single message from webhook.
 
         Args:
@@ -131,7 +135,7 @@ class WebhooksService:
         """
         return WebhookMessage(**message)
 
-    def process_status(self, status: Dict[str, Any]) -> WebhookStatus:
+    def process_status(self, status: dict[str, Any]) -> WebhookStatus:
         """Process a status update from webhook.
 
         Args:
@@ -232,7 +236,7 @@ class WebhooksService:
     # UTILITY METHODS
     # ========================================================================
 
-    def extract_messages(self, event: WebhookEvent) -> List[WebhookMessage]:
+    def extract_messages(self, event: WebhookEvent) -> list[WebhookMessage]:
         """Extract all messages from a webhook event.
 
         Args:
@@ -259,7 +263,7 @@ class WebhooksService:
 
         return messages
 
-    def extract_statuses(self, event: WebhookEvent) -> List[WebhookStatus]:
+    def extract_statuses(self, event: WebhookEvent) -> list[WebhookStatus]:
         """Extract all status updates from a webhook event.
 
         Args:
