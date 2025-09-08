@@ -20,6 +20,7 @@ A comprehensive **synchronous** Python SDK for WhatsApp Business Cloud API, foll
 - 🔔 **Interactive Messages** - Buttons, lists, and quick replies
 - 📍 **Location Messages** - Send and receive location data
 - 👥 **Contact Messages** - Share contact cards
+- ⌨️ **Typing Indicators** - Show typing status for better user experience
 - ✨ **Modern Python** - Supports Python 3.8+
 - 🛡️ **Secure**: Webhook signature validation and secure token handling
 - 📝 **Well-Documented**: Extensive documentation and examples
@@ -215,6 +216,12 @@ response = client.messages.send_interactive(
 ```python
 # Mark message as read
 response = client.messages.mark_as_read("wamid.xxx")
+
+# Mark as read with typing indicator
+response = client.messages.mark_as_read("wamid.xxx", typing_indicator=True)
+
+# Show typing indicator while processing
+response = client.messages.send_typing_indicator("wamid.xxx")
 ```
 
 ### Template Messages
@@ -251,14 +258,34 @@ response = client.templates.send(
 ### Media Operations
 
 ```python
-# Upload media
+# Upload media from file
 response = client.media.upload("/path/to/image.jpg")
 media_id = response.id
+print(f"Uploaded: {media_id}")
 
-# Download media
+# Upload from bytes
+with open("document.pdf", "rb") as f:
+    response = client.media.upload_from_bytes(
+        file_bytes=f.read(),
+        mime_type="application/pdf",
+        filename="document.pdf"
+    )
+
+# Get media URL and info
+url_response = client.media.get_url("media_id_123")
+print(f"URL: {url_response.url}")
+print(f"Size: {url_response.file_size} bytes")
+
+# Download media to memory
 content = client.media.download("media_id_123")
 with open("downloaded.jpg", "wb") as f:
     f.write(content)
+
+# Download directly to file (memory efficient)
+saved_path = client.media.download_to_file(
+    "media_id_123",
+    "/path/to/save/file.jpg"
+)
 
 # Delete media
 success = client.media.delete("media_id_123")

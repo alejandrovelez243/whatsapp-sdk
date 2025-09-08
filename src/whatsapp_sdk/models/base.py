@@ -4,7 +4,9 @@ These models represent the core structures used across the SDK,
 matching Meta's WhatsApp Cloud API v23.0 exactly.
 """
 
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -57,7 +59,7 @@ class Error(BaseModel):
     code: int = Field(..., description="Error code from WhatsApp API")
     title: Optional[str] = Field(None, description="Short error title")
     message: str = Field(..., description="Detailed error message")
-    error_data: Optional[Dict[str, Any]] = Field(None, description="Additional error details")
+    error_data: Optional[dict[str, Any]] = Field(None, description="Additional error details")
     error_subcode: Optional[int] = Field(None, description="More specific error subcode")
     error_user_title: Optional[str] = Field(None, description="User-friendly error title")
     error_user_msg: Optional[str] = Field(None, description="User-friendly error message")
@@ -82,10 +84,10 @@ class MessageResponse(BaseResponse):
     This is the response you get when successfully sending any message type.
     """
 
-    contacts: List[Contact] = Field(
+    contacts: list[Contact] = Field(
         default_factory=list, description="List of contacts that were processed"
     )
-    messages: List[Message] = Field(
+    messages: list[Message] = Field(
         default_factory=list, description="List of messages that were sent"
     )
 

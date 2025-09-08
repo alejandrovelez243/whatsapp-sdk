@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath("../src"))
@@ -14,7 +15,7 @@ sys.path.insert(0, os.path.abspath("../src"))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "WhatsApp SDK Python"
-copyright = f"{datetime.now().year}, Alejandro Velez"
+copyright = f"{datetime.now(timezone.utc).year}, Alejandro Velez"
 author = "Alejandro Velez"
 
 # The full version, including alpha/beta/rc tags

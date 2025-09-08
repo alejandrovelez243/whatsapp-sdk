@@ -4,7 +4,9 @@ These models represent all message types supported by WhatsApp Business API.
 Includes both request models (what users send) and response models (what API returns).
 """
 
-from typing import Any, Dict, List, Optional, Union
+from __future__ import annotations
+
+from typing import Any, Optional, Union
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -161,13 +163,13 @@ class InteractiveHeader(BaseModel):
 
     type: str = Field(..., description="Header type: text, image, video, or document")
     text: Optional[str] = Field(None, description="Text for text headers")
-    image: Optional[Union[ImageMessage, Dict[str, str]]] = Field(
+    image: Union[ImageMessage, dict[str, str], None] = Field(
         None, description="Image for image headers"
     )
-    video: Optional[Union[VideoMessage, Dict[str, str]]] = Field(
+    video: Union[VideoMessage, dict[str, str], None] = Field(
         None, description="Video for video headers"
     )
-    document: Optional[Union[DocumentMessage, Dict[str, str]]] = Field(
+    document: Union[DocumentMessage, dict[str, str], None] = Field(
         None, description="Document for document headers"
     )
 
@@ -188,14 +190,14 @@ class Button(BaseModel):
     """Button for interactive messages."""
 
     type: str = Field("reply", description="Button type (reply)")
-    reply: Dict[str, str] = Field(..., description="Reply button with 'id' and 'title'")
+    reply: dict[str, str] = Field(..., description="Reply button with 'id' and 'title'")
 
 
 class Section(BaseModel):
     """Section for list messages."""
 
     title: Optional[str] = Field(None, max_length=24, description="Section title (max 24 chars)")
-    rows: List[Dict[str, str]] = Field(
+    rows: list[dict[str, str]] = Field(
         ..., description="List of rows with 'id', 'title', and optional 'description'"
     )
 
@@ -203,15 +205,15 @@ class Section(BaseModel):
 class InteractiveAction(BaseModel):
     """Action for interactive messages."""
 
-    buttons: Optional[List[Button]] = Field(
+    buttons: Optional[list[Button]] = Field(
         None, max_length=3, description="List of buttons (max 3)"
     )
     button: Optional[str] = Field(None, description="Button text for list messages")
-    sections: Optional[List[Section]] = Field(
+    sections: Optional[list[Section]] = Field(
         None, max_length=10, description="List sections (max 10)"
     )
     name: Optional[str] = Field(None, description="Action name for CTA URL buttons")
-    parameters: Optional[Dict[str, str]] = Field(None, description="Parameters for CTA URL buttons")
+    parameters: Optional[dict[str, str]] = Field(None, description="Parameters for CTA URL buttons")
 
 
 class InteractiveMessage(BaseModel):
@@ -239,19 +241,19 @@ class TemplateParameter(BaseModel):
         ..., description="Parameter type: text, currency, date_time, image, document, video"
     )
     text: Optional[str] = Field(None, description="Text value for text parameters")
-    image: Optional[Union[ImageMessage, Dict[str, str]]] = Field(
+    image: Union[ImageMessage, dict[str, str], None] = Field(
         None, description="Image for image parameters"
     )
-    video: Optional[Union[VideoMessage, Dict[str, str]]] = Field(
+    video: Union[VideoMessage, dict[str, str], None] = Field(
         None, description="Video for video parameters"
     )
-    document: Optional[Union[DocumentMessage, Dict[str, str]]] = Field(
+    document: Union[DocumentMessage, dict[str, str], None] = Field(
         None, description="Document for document parameters"
     )
-    currency: Optional[Dict[str, Any]] = Field(
+    currency: Optional[dict[str, Any]] = Field(
         None, description="Currency object with fallback_value, code, amount_1000"
     )
-    date_time: Optional[Dict[str, Any]] = Field(
+    date_time: Optional[dict[str, Any]] = Field(
         None, description="Date time object with fallback_value"
     )
 
@@ -262,7 +264,7 @@ class TemplateComponent(BaseModel):
     type: str = Field(..., description="Component type: header, body, button")
     sub_type: Optional[str] = Field(None, description="Button sub-type: quick_reply, url")
     index: Optional[int] = Field(None, description="Button index (0-based)")
-    parameters: List[TemplateParameter] = Field(
+    parameters: list[TemplateParameter] = Field(
         default_factory=list, description="Component parameters"
     )
 
@@ -282,7 +284,7 @@ class TemplateMessage(BaseModel):
 
     name: str = Field(..., description="Template name (must be approved)")
     language: TemplateLanguage = Field(..., description="Template language settings")
-    components: Optional[List[TemplateComponent]] = Field(
+    components: Optional[list[TemplateComponent]] = Field(
         None, description="Template components with parameters"
     )
 
@@ -317,8 +319,8 @@ class MessageStatus(BaseModel):
     status: str = Field(..., description="Status: sent, delivered, read, failed")
     timestamp: str = Field(..., description="Unix timestamp of status update")
     recipient_id: str = Field(..., description="Recipient's WhatsApp ID")
-    conversation: Optional[Dict[str, Any]] = Field(None, description="Conversation details")
-    pricing: Optional[Dict[str, Any]] = Field(None, description="Pricing information")
-    errors: Optional[List[Dict[str, Any]]] = Field(
+    conversation: Optional[dict[str, Any]] = Field(None, description="Conversation details")
+    pricing: Optional[dict[str, Any]] = Field(None, description="Pricing information")
+    errors: Optional[list[dict[str, Any]]] = Field(
         None, description="Error details if status is failed"
     )
