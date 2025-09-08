@@ -4,11 +4,11 @@ Handles sending all types of messages including text, media, location,
 contacts, and interactive messages.
 """
 
-from typing import Any, Dict, List, Optional, Union
+from __future__ import annotations
 
-from ..config import WhatsAppConfig
-from ..http_client import HTTPClient
-from ..models import (  # Request models; Response models
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+
+from whatsapp_sdk.models import (
     AudioMessage,
     Contact,
     ContactMessage,
@@ -20,6 +20,10 @@ from ..models import (  # Request models; Response models
     TextMessage,
     VideoMessage,
 )
+
+if TYPE_CHECKING:
+    from whatsapp_sdk.config import WhatsAppConfig
+    from whatsapp_sdk.http_client import HTTPClient
 
 
 class MessagesService:
@@ -49,7 +53,7 @@ class MessagesService:
         self,
         to: str,
         body: Optional[str] = None,
-        text: Optional[Union[str, TextMessage, Dict[str, Any]]] = None,
+        text: Union[str, TextMessage, Dict[str, Any], None] = None,
         preview_url: bool = False,
     ) -> MessageResponse:
         """Send a text message.
@@ -399,7 +403,9 @@ class MessagesService:
                 c.model_dump(exclude_none=True) if hasattr(c, "model_dump") else c for c in contacts
             ]
         elif isinstance(contacts, ContactMessage):
-            contacts_data = contacts.contacts
+            contacts_data = [
+                c.model_dump(exclude_none=True) if hasattr(c, "model_dump") else c for c in contacts.contacts
+            ]
         elif isinstance(contacts, dict):
             contacts_data = contacts.get("contacts", [contacts])
         else:
@@ -472,22 +478,55 @@ class MessagesService:
     # MESSAGE MANAGEMENT
     # ========================================================================
 
-    def mark_as_read(self, message_id: str) -> MessageResponse:
-        """Mark a message as read.
+    def mark_as_read(self, message_id: str, typing_indicator: bool = False) -> MessageResponse:
+        """Mark a message as read and optionally show typing indicator.
 
         Args:
             message_id: WhatsApp message ID to mark as read
+            typing_indicator: If True, shows typing indicator for up to 25 seconds
+
+        Returns:
+            MessageResponse confirming the action
+
+        Examples:
+            # Mark as read only
+            response = messages.mark_as_read("wamid.xxx")
+
+            # Mark as read and show typing indicator
+            response = messages.mark_as_read("wamid.xxx", typing_indicator=True)
+        """
+        payload: Dict[str, Any] = {
+            "messaging_product": "whatsapp",
+            "status": "read",
+            "message_id": message_id,
+        }
+
+        # Add typing indicator if requested
+        if typing_indicator:
+            payload["typing_indicator"] = {"type": "text"}
+
+        response = self.http_client.post(self.base_url, json=payload)
+        return MessageResponse(**response)
+
+    def send_typing_indicator(self, message_id: str) -> MessageResponse:
+        """Send typing indicator without marking message as read.
+
+        Shows the typing indicator for up to 25 seconds or until a message is sent.
+        Note: This also marks the message as read.
+
+        Args:
+            message_id: WhatsApp message ID to respond to
 
         Returns:
             MessageResponse confirming the action
 
         Example:
-            response = messages.mark_as_read("wamid.xxx")
+            # Show typing indicator while processing
+            messages.send_typing_indicator("wamid.xxx")
+            # Process message...
+            messages.send_text(to, "Response ready!")
         """
-        payload = {"messaging_product": "whatsapp", "status": "read", "message_id": message_id}
-
-        response = self.http_client.post(self.base_url, json=payload)
-        return MessageResponse(**response)
+        return self.mark_as_read(message_id, typing_indicator=True)
 
     # ========================================================================
     # UTILITY METHODS

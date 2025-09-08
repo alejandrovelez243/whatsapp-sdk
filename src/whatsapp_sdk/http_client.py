@@ -4,12 +4,13 @@ Handles all HTTP communication with the WhatsApp Business API,
 including retries, rate limiting, and error handling.
 """
 
+from __future__ import annotations
+
 import time
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import httpx
 
-from .config import WhatsAppConfig
 from .exceptions import (
     WhatsAppAPIError,
     WhatsAppAuthenticationError,
@@ -17,6 +18,9 @@ from .exceptions import (
     WhatsAppRateLimitError,
     WhatsAppValidationError,
 )
+
+if TYPE_CHECKING:
+    from .config import WhatsAppConfig
 
 
 class HTTPClient:
@@ -187,6 +191,122 @@ class HTTPClient:
             raise last_error
         raise WhatsAppAPIError("Unknown error occurred")
 
+    def upload_multipart(
+        self,
+        endpoint: str,
+        files: Dict[str, Any],
+        data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
+        """Make POST request with multipart/form-data for file uploads.
+
+        Args:
+            endpoint: API endpoint
+            files: Files to upload in httpx format
+            data: Form data to include
+            **kwargs: Additional httpx request parameters
+
+        Returns:
+            Response data as dictionary
+
+        Raises:
+            WhatsAppAPIError: For API errors
+            WhatsAppRateLimitError: For rate limit errors
+            WhatsAppAuthenticationError: For auth errors
+        """
+        # Handle rate limiting
+        self._apply_rate_limit()
+
+        # Build full URL if endpoint is relative
+        url = f"{self.base_url}/{endpoint}" if not endpoint.startswith("http") else endpoint
+
+        # For multipart uploads, we need to temporarily remove Content-Type header
+        # so httpx can set it correctly with boundary
+        temp_headers = self.client.headers.copy()
+        if "content-type" in temp_headers:
+            del temp_headers["content-type"]
+
+        # Retry logic
+        last_error = None
+        for attempt in range(self.config.max_retries + 1):
+            try:
+                response = self.client.post(
+                    url,
+                    files=files,
+                    data=data,
+                    headers=temp_headers,
+                    **kwargs
+                )
+                return self._handle_response(response)
+            except WhatsAppRateLimitError:
+                # For rate limit errors, wait longer
+                if attempt < self.config.max_retries:
+                    time.sleep(2**attempt)  # Exponential backoff
+                    continue
+                raise
+            except WhatsAppError as e:
+                last_error = e
+                if attempt < self.config.max_retries:
+                    time.sleep(0.5 * (attempt + 1))  # Linear backoff
+                    continue
+                raise
+            except httpx.HTTPError as e:
+                last_error = WhatsAppAPIError(f"HTTP error: {e!s}")
+                if attempt < self.config.max_retries:
+                    time.sleep(0.5 * (attempt + 1))
+                    continue
+                raise last_error from None
+
+        # Should not reach here, but just in case
+        if last_error:
+            raise last_error
+        raise WhatsAppAPIError("Unknown error occurred")
+
+    def download_binary(self, url: str, **kwargs: Any) -> bytes:
+        """Download binary content from a URL.
+
+        Args:
+            url: Full URL to download from
+            **kwargs: Additional httpx request parameters
+
+        Returns:
+            Binary content as bytes
+
+        Raises:
+            WhatsAppAPIError: For API errors
+        """
+        # Handle rate limiting
+        self._apply_rate_limit()
+
+        # Retry logic
+        last_error = None
+        for attempt in range(self.config.max_retries + 1):
+            try:
+                response = self.client.get(url, **kwargs)
+
+                # Handle non-200 status codes
+                if response.status_code >= 400:
+                    raise WhatsAppAPIError(f"Download failed: {response.status_code}")
+
+                content: bytes = response.content
+                return content
+            except WhatsAppError as e:
+                last_error = e
+                if attempt < self.config.max_retries:
+                    time.sleep(0.5 * (attempt + 1))
+                    continue
+                raise
+            except httpx.HTTPError as e:
+                last_error = WhatsAppAPIError(f"HTTP error: {e!s}")
+                if attempt < self.config.max_retries:
+                    time.sleep(0.5 * (attempt + 1))
+                    continue
+                raise last_error from None
+
+        if last_error:
+            raise last_error
+        raise WhatsAppAPIError("Unknown error occurred")
+
     def _handle_response(self, response: httpx.Response) -> Dict[str, Any]:
         """Handle API response and errors.
 
@@ -251,7 +371,7 @@ class HTTPClient:
         """Close the HTTP client."""
         self.client.close()
 
-    def __enter__(self) -> "HTTPClient":
+    def __enter__(self) -> HTTPClient:
         """Context manager entry."""
         return self
 

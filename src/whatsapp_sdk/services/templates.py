@@ -4,17 +4,21 @@ Handles template management including sending template messages,
 creating, listing, updating, and deleting templates.
 """
 
-from typing import Any, Dict, List, Optional, Union
+from __future__ import annotations
 
-from ..config import WhatsAppConfig
-from ..http_client import HTTPClient
-from ..models import (
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+
+from whatsapp_sdk.models import (
     MessageResponse,
     Template,
     TemplateComponent,
     TemplateListResponse,
     TemplateResponse,
 )
+
+if TYPE_CHECKING:
+    from whatsapp_sdk.config import WhatsAppConfig
+    from whatsapp_sdk.http_client import HTTPClient
 
 
 class TemplatesService:
@@ -45,7 +49,7 @@ class TemplatesService:
         to: str,
         template_name: str,
         language_code: str = "en_US",
-        components: Optional[Union[List[TemplateComponent], List[Dict[str, Any]]]] = None,
+        components: Union[List[TemplateComponent], List[Dict[str, Any]], None] = None,
     ) -> MessageResponse:
         """Send a template message.
 

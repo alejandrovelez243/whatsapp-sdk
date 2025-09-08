@@ -4,14 +4,18 @@ Handles webhook verification, signature validation, and event parsing
 for incoming WhatsApp webhook events.
 """
 
+from __future__ import annotations
+
 import hashlib
 import hmac
 import json
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from ..config import WhatsAppConfig
-from ..exceptions import WhatsAppWebhookError
-from ..models import WebhookEvent, WebhookMessage, WebhookStatus
+from whatsapp_sdk.exceptions import WhatsAppWebhookError
+from whatsapp_sdk.models import WebhookEvent, WebhookMessage, WebhookStatus
+
+if TYPE_CHECKING:
+    from whatsapp_sdk.config import WhatsAppConfig
 
 
 class WebhooksService:

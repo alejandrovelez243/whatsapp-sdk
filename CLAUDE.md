@@ -291,19 +291,93 @@ Key endpoints from Meta's documentation:
 - Media Download: `GET /v23.0/{media-id}`
 - Templates: `POST /v23.0/{phone-number-id}/messages` (with template payload)
 
-### 7. Test Organization Rules
+### 7. Test Organization Rules (MANDATORY STRUCTURE)
+
+**Tests MUST follow this exact structure:**
+
+```
+tests/
+├── unit/                      # Unit tests - mock all external calls
+│   ├── test_client.py        # Test ONLY client initialization
+│   ├── test_config.py        # Test configuration management
+│   ├── test_http_client.py   # Test HTTP client with mocked responses
+│   ├── services/             # Service tests - one file per service
+│   │   ├── __init__.py
+│   │   ├── test_messages.py  # Complete message service tests
+│   │   ├── test_media.py     # Complete media service tests
+│   │   ├── test_templates.py # Complete template service tests
+│   │   └── test_webhooks.py  # Complete webhook service tests
+│   └── models/               # Model tests - validation and serialization
+│       ├── __init__.py
+│       ├── test_base.py      # Base model tests
+│       ├── test_messages.py  # Message model tests
+│       ├── test_templates.py # Template model tests
+│       ├── test_media.py     # Media model tests
+│       └── test_webhooks.py  # Webhook model tests
+├── integration/              # Integration tests - may call real APIs
+│   ├── __init__.py
+│   ├── test_message_flow.py # End-to-end message workflows
+│   ├── test_template_flow.py # Template creation and sending
+│   ├── test_media_flow.py   # Media upload/download flow
+│   └── test_webhook_flow.py # Webhook verification and processing
+├── fixtures/                 # Shared test data
+│   ├── __init__.py
+│   ├── mock_responses.py    # Mock API responses
+│   └── sample_data.py       # Sample payloads and data
+└── conftest.py              # Pytest configuration and shared fixtures
+```
+
+**Test Class Structure:**
 
 ```python
 # ✅ CORRECT - tests/unit/services/test_messages.py
 import pytest
+from unittest.mock import Mock, patch
 from whatsapp_sdk.services.messages import MessagesService
+from whatsapp_sdk.models import MessageResponse
+from whatsapp_sdk.exceptions import WhatsAppError
 
 class TestMessagesService:
-    def test_send_text(self):
-        # Test the service SYNCHRONOUSLY
-        service = MessagesService(mock_http, config, "123")
-        response = service.send_text(to="+1234567890", body="Hello")  # No await!
-        assert response.message_id
+    """Test MessagesService - organized by functionality."""
+
+    @pytest.fixture
+    def service(self):
+        """Create service with mocked dependencies."""
+        mock_http = Mock()
+        mock_config = Mock()
+        return MessagesService(mock_http, mock_config, "123456")
+
+    # Group: Text Messages
+    def test_send_text_simple(self, service):
+        """Test sending simple text message."""
+        # Arrange
+        service.http.post.return_value = {"messages": [{"id": "msg123"}]}
+
+        # Act
+        response = service.send_text(to="+1234567890", body="Hello")
+
+        # Assert
+        assert isinstance(response, MessageResponse)
+        assert response.messages[0].id == "msg123"
+
+    def test_send_text_with_preview(self, service):
+        """Test sending text with URL preview."""
+        # Test implementation
+
+    # Group: Media Messages
+    def test_send_image_with_url(self, service):
+        """Test sending image via URL."""
+        # Test implementation
+
+    def test_send_image_with_media_id(self, service):
+        """Test sending image via media ID."""
+        # Test implementation
+
+    # Group: Error Handling
+    def test_send_text_invalid_number(self, service):
+        """Test error handling for invalid phone number."""
+        with pytest.raises(WhatsAppError):
+            service.send_text(to="invalid", body="Test")
 
 # ❌ WRONG - No async tests for this SDK
 async def test_send_text():  # NO! Not async
@@ -480,6 +554,94 @@ class HTTPClient:
         return response.json()
 ```
 
+## Task Management and Documentation Updates (CRITICAL)
+
+### Task Tracking Requirements
+
+**EVERY TASK MUST BE TRACKED:**
+
+1. **Check TASKS.md FIRST**: Always check `/Users/alejandrovelez/Desktop/colaborations/whatsapp-sdk/claude_docs/TASKS.md` before starting work
+2. **Update Status**: When starting a task, update its status to "IN PROGRESS"
+3. **Complete Tasks**: When finishing, update status to "COMPLETED" with timestamp
+4. **Wait for Approval**: After completing a task, WAIT for user approval before continuing to next task
+
+```markdown
+# Example TASKS.md update:
+## Phase 5: Testing
+- [x] Unit tests for MessagesService - COMPLETED 2024-12-07 14:30
+- [IN PROGRESS] Unit tests for MediaService - Started 2024-12-07 15:00
+- [ ] Unit tests for TemplatesService
+```
+
+### Documentation Update Requirements
+
+**AFTER EACH FEATURE/TASK COMPLETION:**
+
+1. **Update API Documentation** (if new endpoints/methods added):
+   - Update relevant `docs/api/*.rst` files
+   - Add docstrings with examples
+   - Update method signatures
+
+2. **Update Usage Guides** (if new functionality):
+   - Update `docs/usage/*.rst` with examples
+   - Add practical code samples
+   - Include error handling examples
+
+3. **Update README** (if major feature):
+   - Add to features list if significant
+   - Update usage examples if needed
+   - Keep examples simple and clear
+
+4. **Update CHANGELOG**:
+   - Add entry under "Unreleased" section
+   - Follow Keep a Changelog format
+   - Be specific about changes
+
+### Task Completion Checklist
+
+For EVERY task completion:
+
+- [ ] Implementation complete and tested
+- [ ] Unit tests written and passing
+- [ ] TASKS.md updated with completion status
+- [ ] Documentation updated (API docs, usage guides)
+- [ ] CHANGELOG.md updated
+- [ ] Code follows all style rules (synchronous, Pydantic models)
+- [ ] No async/await anywhere
+- [ ] Returns Pydantic models, not dicts
+- [ ] Follows Meta's API documentation
+
+### Documentation Update Pattern
+
+```python
+# After implementing new feature, update docs:
+
+# 1. Update API documentation (docs/api/services.rst)
+"""
+.. automethod:: whatsapp_sdk.services.messages.MessagesService.new_method
+"""
+
+# 2. Update usage guide (docs/usage/messages.rst)
+"""
+New Feature Name
+~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    # Example usage
+    response = client.messages.new_method(
+        param1="value1",
+        param2="value2"
+    )
+"""
+
+# 3. Update CHANGELOG.md
+"""
+### Added
+- New method `new_method` in MessagesService for [description]
+"""
+```
+
 ## Resources
 
 - **Meta WhatsApp Cloud API**: https://developers.facebook.com/docs/whatsapp/cloud-api
@@ -487,7 +649,12 @@ class HTTPClient:
 - **Message Types**: https://developers.facebook.com/docs/whatsapp/cloud-api/messages
 - **Webhooks**: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks
 - **Error Codes**: https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes
-- always a task is done, you must set it as completed
-- It is not necesarry to keep backward compatibility at least the user say it, due this is a new project and don't matter to have compatbility to old ways of doing the stuff
-- any call to an api from whatsapp, should return a pydantic model, never should return a dict.
-- Always follow the tasks in the '/Users/alejandrovelez/Desktop/colaborations/whatsapp-sdk/claude_docs/TASKS.md' file, and after you finish each task, wait for my approval to continue
+
+## Critical Rules Summary
+
+1. **No async/await** - Everything is synchronous
+2. **No backward compatibility needed** - This is a new project
+3. **Always return Pydantic models** - Never return raw dicts from API calls
+4. **Follow TASKS.md** - Check and update task status regularly
+5. **Update documentation** - Keep docs in sync with implementation
+6. **Wait for approval** - After completing each task, wait for user confirmation

@@ -4,6 +4,8 @@ These models represent all message types supported by WhatsApp Business API.
 Includes both request models (what users send) and response models (what API returns).
 """
 
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, field_validator
@@ -161,13 +163,13 @@ class InteractiveHeader(BaseModel):
 
     type: str = Field(..., description="Header type: text, image, video, or document")
     text: Optional[str] = Field(None, description="Text for text headers")
-    image: Optional[Union[ImageMessage, Dict[str, str]]] = Field(
+    image: Union[ImageMessage, Dict[str, str], None] = Field(
         None, description="Image for image headers"
     )
-    video: Optional[Union[VideoMessage, Dict[str, str]]] = Field(
+    video: Union[VideoMessage, Dict[str, str], None] = Field(
         None, description="Video for video headers"
     )
-    document: Optional[Union[DocumentMessage, Dict[str, str]]] = Field(
+    document: Union[DocumentMessage, Dict[str, str], None] = Field(
         None, description="Document for document headers"
     )
 
@@ -239,13 +241,13 @@ class TemplateParameter(BaseModel):
         ..., description="Parameter type: text, currency, date_time, image, document, video"
     )
     text: Optional[str] = Field(None, description="Text value for text parameters")
-    image: Optional[Union[ImageMessage, Dict[str, str]]] = Field(
+    image: Union[ImageMessage, Dict[str, str], None] = Field(
         None, description="Image for image parameters"
     )
-    video: Optional[Union[VideoMessage, Dict[str, str]]] = Field(
+    video: Union[VideoMessage, Dict[str, str], None] = Field(
         None, description="Video for video parameters"
     )
-    document: Optional[Union[DocumentMessage, Dict[str, str]]] = Field(
+    document: Union[DocumentMessage, Dict[str, str], None] = Field(
         None, description="Document for document parameters"
     )
     currency: Optional[Dict[str, Any]] = Field(

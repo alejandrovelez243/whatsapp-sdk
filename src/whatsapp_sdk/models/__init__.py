@@ -3,6 +3,8 @@
 These models provide type-safe data structures for the WhatsApp Business API.
 """
 
+from __future__ import annotations
+
 from .base import (
     BaseResponse,
     Error,

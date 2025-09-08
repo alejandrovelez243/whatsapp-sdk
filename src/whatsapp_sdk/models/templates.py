@@ -4,6 +4,8 @@ These models handle template management including creation,
 listing, and deletion of message templates.
 """
 
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field

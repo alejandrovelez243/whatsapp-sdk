@@ -4,6 +4,8 @@ These models represent contact information (vCard) structures
 for sending and receiving contact details via WhatsApp.
 """
 
+from __future__ import annotations
+
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
